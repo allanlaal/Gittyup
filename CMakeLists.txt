@@ -28,7 +28,7 @@ endif()
 # Explicitly disable shared libraries.
 set(BUILD_SHARED_LIBS OFF)
 
-set(FLATPAK OFF)
+option(FLATPAK "Building for flatpak" OFF)
 
 if (FLATPAK)
     message("Building for flatpak")
