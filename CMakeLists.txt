@@ -28,6 +28,12 @@ endif()
 # Explicitly disable shared libraries.
 set(BUILD_SHARED_LIBS OFF)
 
+set(FLATPAK OFF)
+
+if (FLATPAK)
+    message("Building for flatpak")
+endif()
+
 # Require C++17.
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
