@@ -29,52 +29,54 @@ else()
   )
 endif()
 
-foreach(QT_PLUGIN ${QT_PLUGINS})
-  if(NOT TARGET Qt5::${QT_PLUGIN})
-    continue()
-  endif()
+qt_import_plugins(gittyup INCLUDE ${QT_PLUGINS})
 
-  get_target_property(PLUGIN Qt5::${QT_PLUGIN} LOCATION_${CMAKE_BUILD_TYPE})
-  get_filename_component(FILE_NAME ${PLUGIN} NAME)
-  get_filename_component(DIR ${PLUGIN} DIRECTORY)
-  get_filename_component(DIR_NAME ${DIR} NAME)
-  set(PLUGIN_PATH Plugins/${DIR_NAME}/${FILE_NAME})
+#foreach(QT_PLUGIN ${QT_PLUGINS})
+#  if(NOT TARGET Qt5::${QT_PLUGIN})
+#    continue()
+#  endif()
 
-  install(FILES ${PLUGIN}
-    DESTINATION $<${MAC}:${CONTENTS_DIR}/>Plugins/${DIR_NAME}
-    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-      GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    COMPONENT ${GITTYUP_NAME}
-  )
+#  get_target_property(PLUGIN Qt5::${QT_PLUGIN} LOCATION_${CMAKE_BUILD_TYPE})
+#  get_filename_component(FILE_NAME ${PLUGIN} NAME)
+#  get_filename_component(DIR ${PLUGIN} DIRECTORY)
+#  get_filename_component(DIR_NAME ${DIR} NAME)
+#  set(PLUGIN_PATH Plugins/${DIR_NAME}/${FILE_NAME})
 
-  if(WIN32)
-    # Copy into build dir.
-    execute_process(COMMAND
-      ${CMAKE_COMMAND} -E copy_if_different
-        ${PLUGIN} ${CMAKE_BINARY_DIR}/${PLUGIN_PATH}
-    )
-  elseif(APPLE)
-    # Sign plugin.
-    if(CODESIGN_IDENTITY)
-      install(CODE
-        "execute_process(COMMAND
-          codesign --timestamp --options runtime
-            -s \"${CODESIGN_IDENTITY}\"
-            \${CMAKE_INSTALL_PREFIX}/${CONTENTS_DIR}/${PLUGIN_PATH}
-        )"
-        COMPONENT ${GITTYUP_NAME}
-      )
-    endif()
-  else()
-    # Delete runpath.
-    install(CODE
-      "execute_process(COMMAND chrpath --delete
-        \${CMAKE_INSTALL_PREFIX}/${PLUGIN_PATH}
-      )"
-      COMPONENT ${GITTYUP_NAME}
-    )
-  endif()
-endforeach()
+#  install(FILES ${PLUGIN}
+#    DESTINATION $<${MAC}:${CONTENTS_DIR}/>Plugins/${DIR_NAME}
+#    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+#      GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+#    COMPONENT ${GITTYUP_NAME}
+#  )
+
+#  if(WIN32)
+#    # Copy into build dir.
+#    execute_process(COMMAND
+#      ${CMAKE_COMMAND} -E copy_if_different
+#        ${PLUGIN} ${CMAKE_BINARY_DIR}/${PLUGIN_PATH}
+#    )
+#  elseif(APPLE)
+#    # Sign plugin.
+#    if(CODESIGN_IDENTITY)
+#      install(CODE
+#        "execute_process(COMMAND
+#          codesign --timestamp --options runtime
+#            -s \"${CODESIGN_IDENTITY}\"
+#            \${CMAKE_INSTALL_PREFIX}/${CONTENTS_DIR}/${PLUGIN_PATH}
+#        )"
+#        COMPONENT ${GITTYUP_NAME}
+#      )
+#    endif()
+#  else()
+#    # Delete runpath.
+#    install(CODE
+#      "execute_process(COMMAND chrpath --delete
+#        \${CMAKE_INSTALL_PREFIX}/${PLUGIN_PATH}
+#      )"
+#      COMPONENT ${GITTYUP_NAME}
+#    )
+#  endif()
+#endforeach()
 
 if (NOT FLATPAK)
     # Install Qt libraries.
