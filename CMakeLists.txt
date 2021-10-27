@@ -32,6 +32,8 @@ set(FLATPAK OFF)
 
 if (FLATPAK)
     message("Building for flatpak")
+else()
+    message(FATAL_ERROR "Not building for flatpak")
 endif()
 
 # Require C++17.
