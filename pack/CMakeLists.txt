@@ -126,55 +126,55 @@ if (NOT FLATPAK)
 	endif()
       endif()
     endforeach()
-endif()
 
-# Install XcbQpa library.
-if(UNIX AND NOT APPLE)
-  set(LIB_NAME libQt5XcbQpa)
-  get_target_property(QT_CORE_LIBRARY Qt5::Core LOCATION)
-  get_filename_component(LIB_PATH ${QT_CORE_LIBRARY} PATH)
-  get_filename_component(LIB_EXT ${QT_CORE_LIBRARY} EXT)
+    # Install XcbQpa library.
+    if(UNIX AND NOT APPLE)
+      set(LIB_NAME libQt5XcbQpa)
+      get_target_property(QT_CORE_LIBRARY Qt5::Core LOCATION)
+      get_filename_component(LIB_PATH ${QT_CORE_LIBRARY} PATH)
+      get_filename_component(LIB_EXT ${QT_CORE_LIBRARY} EXT)
 
-  install(FILES "${LIB_PATH}/${LIB_NAME}${LIB_EXT}"
-    DESTINATION .
-    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-      GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-    COMPONENT ${GITTYUP_NAME}
-    RENAME ${LIB_NAME}.so.5
-  )
-endif()
-
-# Install SSL libraries.
-if(FALSE) # NOT APPLE)
-  if(WIN32)
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      set(SSL_LIB_SUFFIX "-1_1-x64.dll")
-    else()
-      set(SSL_LIB_SUFFIX "-1_1.dll")
-    endif()
-  else()
-    set(SSL_LIB_SUFFIX ".so.1.1")
-  endif()
-
-  foreach(SSL_LIB_NAME ssl crypto)
-    set(SSL_LIB "${OPENSSL_DIR}/lib${SSL_LIB_NAME}${SSL_LIB_SUFFIX}")
-
-    if(WIN32)
-      # Copy into build dir.
-      execute_process(COMMAND
-        ${CMAKE_COMMAND} -E copy_if_different
-          ${SSL_LIB} ${CMAKE_BINARY_DIR}
+      install(FILES "${LIB_PATH}/${LIB_NAME}${LIB_EXT}"
+	DESTINATION .
+	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+	  GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+	COMPONENT ${GITTYUP_NAME}
+	RENAME ${LIB_NAME}.so.5
       )
     endif()
 
-    install(FILES ${SSL_LIB}
-      DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-        GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      COMPONENT ${GITTYUP_NAME}
-      OPTIONAL # if we use the system libssh, we have not built openssl
-    )
-  endforeach()
+    # Install SSL libraries.
+    if(FALSE) # NOT APPLE)
+      if(WIN32)
+	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	  set(SSL_LIB_SUFFIX "-1_1-x64.dll")
+	else()
+	  set(SSL_LIB_SUFFIX "-1_1.dll")
+	endif()
+      else()
+	set(SSL_LIB_SUFFIX ".so.1.1")
+      endif()
+
+      foreach(SSL_LIB_NAME ssl crypto)
+	set(SSL_LIB "${OPENSSL_DIR}/lib${SSL_LIB_NAME}${SSL_LIB_SUFFIX}")
+
+	if(WIN32)
+	  # Copy into build dir.
+	  execute_process(COMMAND
+	    ${CMAKE_COMMAND} -E copy_if_different
+	      ${SSL_LIB} ${CMAKE_BINARY_DIR}
+	  )
+	endif()
+
+	install(FILES ${SSL_LIB}
+	  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+	  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+	    GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+	  COMPONENT ${GITTYUP_NAME}
+	  OPTIONAL # if we use the system libssh, we have not built openssl
+	)
+      endforeach()
+    endif()
 endif()
 
 # Install config files.
