@@ -76,55 +76,57 @@ foreach(QT_PLUGIN ${QT_PLUGINS})
   endif()
 endforeach()
 
-# Install Qt libraries.
-foreach(QT_MODULE ${QT_MODULES})
-  get_target_property(QT_LIBRARY Qt5::${QT_MODULE} LOCATION_${CMAKE_BUILD_TYPE})
+if (NOT FLATPAK)
+    # Install Qt libraries.
+    foreach(QT_MODULE ${QT_MODULES})
+      get_target_property(QT_LIBRARY Qt5::${QT_MODULE} LOCATION_${CMAKE_BUILD_TYPE})
 
-  if(APPLE)
-    get_filename_component(QT_FRAMEWORK ${QT_LIBRARY} DIRECTORY)
-    set(DEST_DIR ${CONTENTS_DIR}/Frameworks)
-    install(DIRECTORY ${QT_FRAMEWORK}
-      DESTINATION ${DEST_DIR}
-      COMPONENT ${GITTYUP_NAME}
-      PATTERN "*.prl" EXCLUDE
-      PATTERN "*_debug" EXCLUDE
-      PATTERN "Headers" EXCLUDE
-      PATTERN ".DS_Store" EXCLUDE
-    )
-  else()
-    if(WIN32)
-      get_filename_component(TARGET_NAME ${QT_LIBRARY} NAME)
+      if(APPLE)
+	get_filename_component(QT_FRAMEWORK ${QT_LIBRARY} DIRECTORY)
+	set(DEST_DIR ${CONTENTS_DIR}/Frameworks)
+	install(DIRECTORY ${QT_FRAMEWORK}
+	  DESTINATION ${DEST_DIR}
+	  COMPONENT ${GITTYUP_NAME}
+	  PATTERN "*.prl" EXCLUDE
+	  PATTERN "*_debug" EXCLUDE
+	  PATTERN "Headers" EXCLUDE
+	  PATTERN ".DS_Store" EXCLUDE
+	)
+      else()
+	if(WIN32)
+	  get_filename_component(TARGET_NAME ${QT_LIBRARY} NAME)
 
-      # Copy into build dir.
-      execute_process(COMMAND
-        ${CMAKE_COMMAND} -E copy_if_different
-          ${QT_LIBRARY} ${CMAKE_BINARY_DIR}
-      )
-    else()
-      # Strip minor and patch version extensions.
-      get_filename_component(TARGET_NAME_WE ${QT_LIBRARY} NAME_WE)
-      set(TARGET_NAME ${TARGET_NAME_WE}.so.5)
-    endif()
+	  # Copy into build dir.
+	  execute_process(COMMAND
+	    ${CMAKE_COMMAND} -E copy_if_different
+	      ${QT_LIBRARY} ${CMAKE_BINARY_DIR}
+	  )
+	else()
+	  # Strip minor and patch version extensions.
+	  get_filename_component(TARGET_NAME_WE ${QT_LIBRARY} NAME_WE)
+	  set(TARGET_NAME ${TARGET_NAME_WE}.so.5)
+	endif()
 
-    install(FILES ${QT_LIBRARY}
-      DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
-      PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-        GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-      COMPONENT ${GITTYUP_NAME}
-      RENAME ${TARGET_NAME}
-    )
+	install(FILES ${QT_LIBRARY}
+	  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib
+	  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+	    GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+	  COMPONENT ${GITTYUP_NAME}
+	  RENAME ${TARGET_NAME}
+	)
 
-    if(NOT WIN32)
-      # Delete runpath.
-      install(CODE
-        "execute_process(COMMAND chrpath --delete
-          \${CMAKE_INSTALL_PREFIX}/${TARGET_NAME}
-        )"
-        COMPONENT ${GITTYUP_NAME}
-      )
-    endif()
-  endif()
-endforeach()
+	if(NOT WIN32)
+	  # Delete runpath.
+	  install(CODE
+	    "execute_process(COMMAND chrpath --delete
+	      \${CMAKE_INSTALL_PREFIX}/${TARGET_NAME}
+	    )"
+	    COMPONENT ${GITTYUP_NAME}
+	  )
+	endif()
+      endif()
+    endforeach()
+endif()
 
 # Install XcbQpa library.
 if(UNIX AND NOT APPLE)
