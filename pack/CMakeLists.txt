@@ -182,12 +182,14 @@ if(UNIX AND NOT APPLE)
   )
 endif()
 
-# Install config files.
-set(QT_CONF ${CONF_DIR}/qt.conf)
-install(FILES ${QT_CONF}
-  DESTINATION $<${MAC}:${CONTENTS_DIR}/Resources/>.
-  COMPONENT ${GITTYUP_NAME}
-)
+if (NOT FLATPAK)
+    # Install config files.
+    set(QT_CONF ${CONF_DIR}/qt.conf)
+    install(FILES ${QT_CONF}
+      DESTINATION $<${MAC}:${CONTENTS_DIR}/Resources/>.
+      COMPONENT ${GITTYUP_NAME}
+    )
+endif()
 
 if(NOT APPLE)
   if(UNIX)
