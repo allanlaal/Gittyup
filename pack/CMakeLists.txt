@@ -132,22 +132,6 @@ if (NOT FLATPAK)
       endif()
     endforeach()
 
-    # Install XcbQpa library.
-    if(UNIX AND NOT APPLE)
-      set(LIB_NAME libQt5XcbQpa)
-      get_target_property(QT_CORE_LIBRARY Qt5::Core LOCATION)
-      get_filename_component(LIB_PATH ${QT_CORE_LIBRARY} PATH)
-      get_filename_component(LIB_EXT ${QT_CORE_LIBRARY} EXT)
-
-      install(FILES "${LIB_PATH}/${LIB_NAME}${LIB_EXT}"
-	DESTINATION .
-	PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-	  GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
-	COMPONENT ${GITTYUP_NAME}
-	RENAME ${LIB_NAME}.so.5
-      )
-    endif()
-
     # Install SSL libraries.
     if(FALSE) # NOT APPLE)
       if(WIN32)
@@ -180,6 +164,22 @@ if (NOT FLATPAK)
 	)
       endforeach()
     endif()
+endif()
+
+# Install XcbQpa library.
+if(UNIX AND NOT APPLE)
+  set(LIB_NAME libQt5XcbQpa)
+  get_target_property(QT_CORE_LIBRARY Qt5::Core LOCATION)
+  get_filename_component(LIB_PATH ${QT_CORE_LIBRARY} PATH)
+  get_filename_component(LIB_EXT ${QT_CORE_LIBRARY} EXT)
+
+  install(FILES "${LIB_PATH}/${LIB_NAME}${LIB_EXT}"
+    DESTINATION .
+    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+      GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    COMPONENT ${GITTYUP_NAME}
+    RENAME ${LIB_NAME}.so.5
+  )
 endif()
 
 # Install config files.
